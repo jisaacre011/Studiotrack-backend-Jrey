@@ -1,13 +1,14 @@
-# Punto de entrada de la API. Por ahora solo monta CORS y un endpoint raiz.
-# Los routers se conectan en el Modulo 2.
+# Punto de entrada de la API StudioTrack.
+# Monta CORS y conecta todos los routers por dominio.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.routers import estudios, reservas, health
 
 app = FastAPI(title="StudioTrack API", version="1.0.0")
 
-# CORS: permite que el frontend Reflex consuma la API desde otro origen.
+# CORS: permite que el frontend Reflex consuma la API.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.frontend_origin],
@@ -15,6 +16,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Routers por dominio.
+app.include_router(health.router)
+app.include_router(estudios.router)
+app.include_router(reservas.router)
 
 
 @app.get("/")
