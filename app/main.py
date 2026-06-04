@@ -26,3 +26,9 @@ app.include_router(reservas.router)
 @app.get("/")
 def root():
     return {"mensaje": "StudioTrack API operativa"}
+
+# En los imports de routers, agrega admin:
+from app.routers import estudios, reservas, health, admin
+
+# Donde incluyes los routers, agrega:
+app.include_router(admin.router)

@@ -64,3 +64,13 @@ class ReservaOut(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+# ---------- ESTUDIOS: entrada para crear/editar (panel admin) ----------
+class EstudioCreate(BaseModel):
+    nombre: str = Field(min_length=2, max_length=120)
+    descripcion: str | None = None
+    tipo: str = Field(min_length=2, max_length=60)
+    capacidad: int = Field(gt=0, le=100)
+    precio_hora: Decimal = Field(gt=0)
+    imagen_url: str | None = None
+    activo: bool = True
