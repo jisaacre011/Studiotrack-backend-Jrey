@@ -74,3 +74,63 @@ class EstudioCreate(BaseModel):
     precio_hora: Decimal = Field(gt=0)
     imagen_url: str | None = None
     activo: bool = True
+
+# ---------- PRODUCTOS ----------
+class ProductoCreate(BaseModel):
+    nombre: str = Field(min_length=2, max_length=120)
+    descripcion: str | None = None
+    tipo: str = Field(pattern="^(venta|alquiler|ambos)$")
+    precio_venta: Decimal | None = Field(default=None, gt=0)
+    precio_alquiler_dia: Decimal | None = Field(default=None, gt=0)
+    stock: int = Field(ge=0)
+    imagen_url: str | None = None
+    activo: bool = True
+
+
+class ProductoOut(BaseModel):
+    id: int
+    nombre: str
+    descripcion: str | None
+    tipo: str
+    precio_venta: Decimal | None
+    precio_alquiler_dia: Decimal | None
+    stock: int
+    imagen_url: str | None
+    activo: bool
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ---------- CARRITO / TRANSACCIONES ----------
+class CarritoItem(BaseModel):
+    producto_id: int
+    modalidad: str = Field(pattern="^(compra|alquiler)$")
+    cantidad: int = Field(gt=0)
+    dias: int = Field(default=1, gt=0)
+
+
+class TransaccionCreate(BaseModel):
+    cliente_nombre: str = Field(min_length=2, max_length=120)
+    cliente_email: EmailStr
+    cliente_telefono: str | None = Field(default=None, max_length=40)
+    items: list[CarritoItem] = Field(min_length=1)
+
+
+class DetalleOut(BaseModel):
+    producto_id: int
+    modalidad: str
+    cantidad: int
+    dias: int
+    precio_unitario: Decimal
+    subtotal: Decimal
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TransaccionOut(BaseModel):
+    id: int
+    cliente_nombre: str
+    cliente_email: EmailStr
+    cliente_telefono: str | None
+    total: Decimal
+    created_at: datetime
+    detalles: list[DetalleOut] = []
+    model_config = ConfigDict(from_attributes=True)
