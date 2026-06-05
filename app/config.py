@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     database_url: str          # cadena de conexion a MySQL
     frontend_origin: str       # origen permitido para CORS
+    admin_key: str             # clave de administrador
 
     model_config = SettingsConfigDict(env_file=".env")
 
