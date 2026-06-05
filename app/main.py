@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import estudios, reservas, health
+from app.routers import estudios, reservas, health, admin, productos, transacciones, planes
 
 app = FastAPI(title="StudioTrack API", version="1.0.0")
 
@@ -21,6 +21,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(estudios.router)
 app.include_router(reservas.router)
+app.include_router(planes.router)  # <-- SOLO EDITÉ ESTO (añadí esta línea)
 
 
 @app.get("/")

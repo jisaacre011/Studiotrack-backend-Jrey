@@ -57,3 +57,13 @@ class Reserva(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     estudio = relationship("Estudio", back_populates="reservas")
+
+
+class Plan(Base):
+    __tablename__ = "planes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(80), nullable=False)
+    descripcion = Column(Text, nullable=True)       # que incluye el plan
+    precio = Column(DECIMAL(10, 2), nullable=False) # editable por admin
+    activo = Column(Boolean, default=True, nullable=False)

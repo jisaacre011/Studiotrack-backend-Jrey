@@ -64,3 +64,24 @@ class ReservaOut(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# ---------- PLANES ----------
+class PlanOut(BaseModel):
+    id: int
+    nombre: str
+    descripcion: str | None
+    precio: Decimal
+    activo: bool
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PlanPrecioUpdate(BaseModel):
+    precio: Decimal = Field(gt=0)
+
+
+class PlanCreate(BaseModel):
+    nombre: str = Field(min_length=2, max_length=80)
+    descripcion: str | None = None
+    precio: Decimal = Field(gt=0)
+    activo: bool = True
