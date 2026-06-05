@@ -57,3 +57,46 @@ class Reserva(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     estudio = relationship("Estudio", back_populates="reservas")
+
+class Producto(Base):
+    __tablename__ = "productos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(120), nullable=False)
+    descripcion = Column(Text, nullable=True)
+    tipo = Column(String(20), nullable=False)            # venta, alquiler, ambos
+    precio_venta = Column(DECIMAL(10, 2), nullable=True)
+    precio_alquiler_dia = Column(DECIMAL(10, 2), nullable=True)
+    stock = Column(Integer, default=0, nullable=False)
+    imagen_url = Column(String(255), nullable=True)
+    activo = Column(Boolean, default=True, nullable=False)
+
+
+class Transaccion(Base):
+    __tablename__ = "transacciones"
+
+    id = Column(Integer, primary_key=True, index=True)
+    cliente_nombre = Column(String(120), nullable=False)
+    cliente_email = Column(String(120), nullable=False)
+    cliente_telefono = Column(String(40), nullable=True)
+    total = Column(DECIMAL(10, 2), nullable=False)        # calculado en servidor
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    detalles = relationship("TransaccionDetalle", back_populates="transaccion",
+                            cascade="all, delete-orphan")
+
+
+class TransaccionDetalle(Base):
+    __tablename__ = "transaccion_detalle"
+
+    id = Column(Integer, primary_key=True, index=True)
+    transaccion_id = Column(Integer, ForeignKey("transacciones.id"), nullable=False)
+    producto_id = Column(Integer, ForeignKey("productos.id"), nullable=False)
+    modalidad = Column(String(20), nullable=False)        # compra, alquiler
+    cantidad = Column(Integer, nullable=False)
+    dias = Column(Integer, default=1, nullable=False)     # 1 en compra
+    precio_unitario = Column(DECIMAL(10, 2), nullable=False)  # snapshot del precio
+    subtotal = Column(DECIMAL(10, 2), nullable=False)
+
+    transaccion = relationship("Transaccion", back_populates="detalles")
+    producto = relationship("Producto")

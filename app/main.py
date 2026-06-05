@@ -2,9 +2,8 @@
 # Monta CORS y conecta todos los routers por dominio.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.config import settings
-from app.routers import estudios, reservas, health
+from app.routers import estudios, reservas, health, admin, productos, transacciones
 
 app = FastAPI(title="StudioTrack API", version="1.0.0")
 
@@ -21,14 +20,11 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(estudios.router)
 app.include_router(reservas.router)
+app.include_router(admin.router)
+app.include_router(productos.router)
+app.include_router(transacciones.router)
 
 
 @app.get("/")
 def root():
     return {"mensaje": "StudioTrack API operativa"}
-
-# En los imports de routers, agrega admin:
-from app.routers import estudios, reservas, health, admin
-
-# Donde incluyes los routers, agrega:
-app.include_router(admin.router)
