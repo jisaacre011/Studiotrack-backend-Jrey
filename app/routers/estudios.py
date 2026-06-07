@@ -26,3 +26,56 @@ def contar_reservas(estudio_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Estudio no encontrado")
     total = db.query(models.Reserva).filter(models.Reserva.estudio_id == estudio_id).count()
     return {"estudio_id": estudio_id, "total_reservas": total}
+
+# Al inicio del archivo, junto a los otros imports, agrega:
+from app.auth import verificar_admin
+
+
+# --- Operaciones de administrador (protegidas con clave) ---
+
+@router.post("", response_model=schemas.EstudioOut, status_code=201)
+def crear_estudio(
+    payload: schemas.EstudioCreate,
+    db: Session = Depends(get_db),
+    _: bool = Depends(verificar_admin),
+):
+    # Crea una nueva sala. Requiere clave admin.
+    estudio = models.Estudio(**payload.model_dump())
+    db.add(estudio)
+    db.commit()
+    db.refresh(estudio)
+    return estudio
+
+
+@router.put("/{estudio_id}", response_model=schemas.EstudioOut)
+def editar_estudio(
+    estudio_id: int,
+    payload: schemas.EstudioCreate,
+    db: Session = Depends(get_db),
+    _: bool = Depends(verificar_admin),
+):
+    # Edita una sala existente. Requiere clave admin.
+    estudio = db.query(models.Estudio).filter(models.Estudio.id == estudio_id).first()
+    if estudio is None:
+        raise HTTPException(status_code=404, detail="Estudio no encontrado")
+    # Actualiza cada campo con los valores recibidos.
+    for campo, valor in payload.model_dump().items():
+        setattr(estudio, campo, valor)
+    db.commit()
+    db.refresh(estudio)
+    return estudio
+
+
+@router.delete("/{estudio_id}", status_code=204)
+def borrar_estudio(
+    estudio_id: int,
+    db: Session = Depends(get_db),
+    _: bool = Depends(verificar_admin),
+):
+    # Borra una sala. Requiere clave admin.
+    estudio = db.query(models.Estudio).filter(models.Estudio.id == estudio_id).first()
+    if estudio is None:
+        raise HTTPException(status_code=404, detail="Estudio no encontrado")
+    db.delete(estudio)
+    db.commit()
+    return None
