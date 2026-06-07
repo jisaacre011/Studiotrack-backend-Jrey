@@ -23,4 +23,4 @@ def actualizar_precio(plan_id: int, payload: schemas.PlanPrecioUpdate,
     plan.precio = payload.precio
     db.commit()
     db.refresh(plan)
-    return plans
+    return plan
